@@ -1,5 +1,9 @@
 # noxtes
 
+A simple notes app made with Nuxt JS.
+
+Made with : Vue JS, Nuxt JS, Firebase
+
 ## Build Setup
 
 ```bash
