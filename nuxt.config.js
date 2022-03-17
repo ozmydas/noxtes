@@ -19,7 +19,7 @@ export default {
 
     // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
     plugins: [
-        { src: '~/plugins/persistedState.client.js' }
+        { src: '~/plugins/persistedState.js', ssr: false }
     ],
 
     // Auto import components: https://go.nuxtjs.dev/config-components
@@ -60,7 +60,8 @@ export default {
     build: {},
 
     router: {
-        base: process.env.NODE_ENV === "development" ? process.env.BASE_URL : "/noxtes/"
+        base: process.env.NODE_ENV === "development" ? process.env.BASE_URL : "/noxtes/",
+        middleware: ['notes']
     },
 
     firebase: {

@@ -9,7 +9,7 @@
                     img-alt="Image"
                     img-top
                     tag="article"
-                    :style="{background: item.color}"
+                    :style="{ background: item.color }"
                     class="mb-2 pastel-yellow"
                 >
                     <b-card-text>{{ item.content }}</b-card-text>
@@ -54,13 +54,14 @@
             hide-header
             no-close-on-backdrop
         >
-            <p class="my-4 text-center">Please Wait . . . .</p>
+            <p class="my-4 text-center">Please Wait<br/>Syncronizing Firebase . . . .</p>
         </b-modal>
     </b-container>
 </template>
 
 <script>
 import _ from "lodash"
+import { DateTime } from "luxon"
 
 export default {
     name: 'MainMenu',
@@ -80,7 +81,7 @@ export default {
         console.log(pub)
 
         // console.log(this.noteLists.length)
-        if(this.$route.params.refresh){
+        if (this.$route.params.refresh) {
             return this.getNotes()
         }
 
@@ -88,6 +89,15 @@ export default {
             return this.getNotes()
         } else {
             this.loading = false
+
+            if (this.$store.state.notes.expired <= DateTime.now().toString() || this.$store.state.notes.expired == null) {
+                this.$store.commit('notes/set', [])
+                return this.getNotes()
+            } else {
+                setTimeout(() => {
+                    return this.getNotes()
+                }, 2000);
+            }
         }
 
         // const snapshot = await dataRef.orderBy('created_datetime', 'desc').get()
@@ -101,20 +111,34 @@ export default {
     methods: {
         async getNotes () {
             this.loading = true
-            console.log('fetching from firebase....')
+            console.log('Please Wait. Syncronizing Firebase....')
 
             const dataRef = this.$fire.firestore.collection('users').doc('master')
+            await dataRef.collection('notes').orderBy('created_datetime', 'desc').onSnapshot(snap => {
+                const tempItems = []
+                snap.forEach(doc => {
+                    tempItems.push({
+                        id: doc.id,
+                        title: doc.data().title,
+                        content: doc.data().content,
+                        color: doc.data().color,
+                        created_datetime: doc.data().created_datetime,
+                    })
+                });
 
-            const notes = await dataRef.collection('notes').orderBy('created_datetime', 'desc').get()
-            const items = notes.docs.map(doc => {
-                const item = doc.data()
-                item.id = doc.id
-                return item
+                const nextExpiredTime = DateTime.now().plus({ minutes: 1 }).toString()
+
+                this.$store.commit('notes/set', tempItems)
+                this.$store.commit('notes/setExpired', nextExpiredTime)
+                this.loading = false
             })
+            // const items = notes.docs.map(doc => {
+            //     const item = doc.data()
+            //     item.id = doc.id
+            //     return item
+            // })
 
-            console.log(items)
-            this.$store.commit('notes/set', items)
-            this.loading = false
+            // console.log(items)
         },
 
         deleteNotes (id) {
@@ -126,9 +150,11 @@ export default {
                     this.$bvModal.show('modal-1')
                     const dataRef = this.$fire.firestore.collection('users').doc('master')
                     dataRef.collection('notes').doc(id).delete().then(() => {
+                        
                         this.$bvModal.hide('modal-1')
                         this.makeToast('warning', 'Notes Deleted!')
                         this.filtering(id)
+                        // this.getNotes()
 
                     }).catch((error) => {
                         this.$bvModal.hide('modal-1')

@@ -63,7 +63,13 @@ export default {
 
             this.$fire.firestore.collection('users').doc('master').collection('notes').add(indata).then((dataRef) => {
                 console.log("Document written with ID: ", dataRef.id);
-                this.$store.commit('notes/add', indata)
+                this.$store.commit('notes/add', {
+                    id: dataRef.id,
+                    title: indata.title,
+                    content: indata.content,
+                    color: indata.color,
+                    created_datetime: indata.created_datetime
+                })
                 // alert("Notes Saved")
                 // window.location = process.env.baseUrl
                 // this.$bvModal.hide('modal-1')

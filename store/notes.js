@@ -1,5 +1,6 @@
 export const state = () => ({
-    list: []
+    list: [],
+    expired: null
 })
 
 export const mutations = {
@@ -11,5 +12,8 @@ export const mutations = {
       },
     remove (state, { item }) {
         state.list.splice(state.list.indexOf(item), 1)
+    },
+    setExpired (state, expired) {
+        state.expired = expired
     },
 }
