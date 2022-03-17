@@ -11,6 +11,7 @@ export default function ({ store, route }) {
     const now = DateTime.now().toString()
     // const nextExpiredTime = DateTime.now().plus({ minutes: 15 }).toString()
 
+    console.log("middleware")
     console.log(store.state.notes.list)
 
     if (store.state.notes.expired <= now || store.state.notes.expired == null) {

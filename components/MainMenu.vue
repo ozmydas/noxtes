@@ -99,13 +99,6 @@ export default {
                 }, 2000);
             }
         }
-
-        // const snapshot = await dataRef.orderBy('created_datetime', 'desc').get()
-        // this.items = snapshot.docs.map(doc => {
-        //     const item = doc.data()
-        //     item.id = doc.id
-        //     return item
-        // })
     },
 
     methods: {
@@ -132,13 +125,6 @@ export default {
                 this.$store.commit('notes/setExpired', nextExpiredTime)
                 this.loading = false
             })
-            // const items = notes.docs.map(doc => {
-            //     const item = doc.data()
-            //     item.id = doc.id
-            //     return item
-            // })
-
-            // console.log(items)
         },
 
         deleteNotes (id) {

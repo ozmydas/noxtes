@@ -1,3 +1,5 @@
+import _ from "lodash"
+
 export const state = () => ({
     list: [],
     expired: null
@@ -5,7 +7,7 @@ export const state = () => ({
 
 export const mutations = {
     set (state, items) {
-        state.list = items
+        state.list = _.uniqBy(items, 'id')
     },
     add(state, item) {
         state.list.unshift(item)
